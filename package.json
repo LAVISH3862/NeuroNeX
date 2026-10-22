@@ -1,0 +1,15 @@
+{
+  "name": "reroute",
+  "version": "1.0.0",
+  "description": "ReRoute: an AI agent that detects travel disruptions, finds every affected booking and builds a recovery itinerary within the traveller's limits.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": ["travel", "ai-agent", "disruption", "gemini", "hackathon"],
+  "license": "MIT"
+}

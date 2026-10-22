@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="darkreader-lock" />
+  <title>ReRoute: travel disruption recovery</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Doto:wght@800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="board">
+    <div class="board-inner">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 26V12a6 6 0 0 1 6-6h8" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><path d="M17 2l5 4-5 4" fill="none" stroke="#F2B600" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="26" r="3.5" fill="#F2B600"/></svg>
+        <div>
+          <h1>ReRoute</h1>
+          <p>When one booking breaks, it fixes the whole trip</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero" aria-labelledby="heroTitle">
+    <canvas class="hero-shader" id="heroShader" aria-hidden="true"></canvas>
+    <svg class="hero-rails" viewBox="0 0 1200 500" aria-hidden="true">
+      <defs>
+        <linearGradient id="beamGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffc21a" stop-opacity="0" />
+          <stop offset="1" stop-color="#fff3c4" />
+        </linearGradient>
+      </defs>
+      <g class="sleeper"><path d="M420 470h360M455 380h290M486 300h228M512 230h176M534 170h132M552 120h96M567 78h66M579 44h42" /></g>
+      <path class="rail" d="M560 0 L380 500" />
+      <path class="rail" d="M640 0 L820 500" />
+      <path class="beam" stroke="url(#beamGrad)" d="M560 0 L380 500" />
+      <path class="beam b2" stroke="url(#beamGrad)" d="M640 0 L820 500" />
+    </svg>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <h2 id="heroTitle">A cancelled train is never just a cancelled train.</h2>
+        <p>It takes the hotel check-in, the cab and the wedding down with it. ReRoute is an AI agent that finds everything a disruption breaks, searches alternatives within your budget and timing, and hands you a new plan to approve.</p>
+        <div class="hero-cta">
+          <button class="btn btn-signal" id="heroRun" type="button">Watch ReRoute fix it</button>
+          <a class="hero-link" href="#app">See the trip first</a>
+        </div>
+      </div>
+
+      <div class="dboard" role="img" aria-label="Trip board: Sathvik's train is cancelled and his hotel, cab and wedding are at risk">
+        <div class="dboard-head">
+          <span>Sathvik's trip</span>
+          <span class="dboard-clock" id="dbClock">5:29 PM</span>
+        </div>
+        <div class="dboard-cols"><span>Time</span><span>Booking</span><span>Status</span></div>
+        <ul class="dboard-rows" id="dbRows">
+          <li data-final="Cancelled" data-tone="red"><span>8:00 PM</span><span>Train 16511 to Mangaluru</span><b>On time</b></li>
+          <li data-final="At risk" data-tone="amber"><span>7:00 AM</span><span>Hotel early check-in</span><b>On track</b></li>
+          <li data-final="At risk" data-tone="amber"><span>9:15 AM</span><span>Cab to Udupi</span><b>On track</b></li>
+          <li data-final="At risk" data-tone="amber"><span>11:00 AM</span><span>Wedding muhurtham</span><b>On track</b></li>
+          <li data-final="On track" data-tone="calm"><span>6:20 PM</span><span>Return flight, 26 Oct</span><b>On track</b></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" id="how" aria-labelledby="howTitle">
+    <div class="how-head">
+      <span class="how-kicker">How the agent works</span>
+      <h2 id="howTitle">Six steps from “cancelled” to a plan he can approve</h2>
+    </div>
+    <div class="how-frame">
+      <div class="how-chips" id="howChips">
+        <button type="button" data-i="0"><span class="how-n">1</span>Detect the disruption</button>
+        <button type="button" data-i="1"><span class="how-n">2</span>Trace the knock-on effects</button>
+        <button type="button" data-i="2"><span class="how-n">3</span>Search alternatives</button>
+        <button type="button" data-i="3"><span class="how-n">4</span>Check his limits</button>
+        <button type="button" data-i="4"><span class="how-n">5</span>Rank for his priority</button>
+        <button type="button" data-i="5"><span class="how-n">6</span>Explain and ask</button>
+      </div>
+      <div class="how-stage" id="howStage">
+        <article class="how-card">
+          <div class="how-viz viz-led"><span>5:30 PM</span><span>16511 MANGALURU</span><b>CANCELLED</b></div>
+          <span class="how-tag">1 · Detect</span>
+          <p>Train 16511 is cancelled at 5:30 PM. The agent picks it up before Sathvik even opens the app.</p>
+        </article>
+        <article class="how-card">
+          <div class="how-viz viz-chain"><i class="c-red"></i><i class="c-amb"></i><i class="c-amb"></i><i class="c-amb"></i><i class="c-ok"></i></div>
+          <span class="how-tag">2 · Trace</span>
+          <p>One broken train puts the hotel check-in, the cab and the wedding at risk. The return flight is safe.</p>
+        </article>
+        <article class="how-card">
+          <div class="how-viz viz-modes"><span>KSRTC bus</span><span>Sleeper</span><span>Flight</span><span>Tatkal</span><span>Taxi</span><span>Udupi hotel</span></div>
+          <span class="how-tag">3 · Search</span>
+          <p>Buses, flights, Tatkal trains, taxis and nearer hotels all go on the table.</p>
+        </article>
+        <article class="how-card">
+          <ul class="how-viz viz-checks"><li class="y">Budget after ₹1,165 refund</li><li class="y">In Mangaluru by 9:00 AM</li><li class="y">At the venue by 10:45 AM</li><li class="n">“Avoid buses”</li></ul>
+          <span class="how-tag">4 · Check</span>
+          <p>Every option is tested against his limits. Each one that fails says exactly why.</p>
+        </article>
+        <article class="how-card">
+          <div class="how-viz viz-bars"><span style="--w:92%">Airavat Volvo</span><span style="--w:74%">IX 2741 flight</span><span style="--w:58%">Rajahamsa</span></div>
+          <span class="how-tag">5 · Rank</span>
+          <p>Balanced, cheapest, earliest or comfort. Change the priority and the winner changes.</p>
+        </article>
+        <article class="how-card">
+          <div class="how-viz viz-phone"><b>ReRoute</b><span class="indic">ನಿಮ್ಮ ಹೊಸ ಯೋಜನೆ ಸಿದ್ಧವಾಗಿದೆ</span><span class="indic">आपकी नई योजना तैयार है</span></div>
+          <span class="how-tag">6 · Explain</span>
+          <p>The AI explains the pick in plain words. Nothing is booked until Sathvik approves.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <main class="layout" id="app">
+    <!-- Left: the trip -->
+    <aside class="trip" aria-labelledby="tripHeading">
+      <div class="trip-head">
+        <h2 id="tripHeading">Sathvik's trip</h2>
+        <p class="sub" id="tripSub">Bengaluru to Mangaluru, for a cousin's wedding in Udupi</p>      </div>
+      <ol class="route" id="route"></ol>
+
+      <form class="limits" id="limits">
+        <h3>His limits</h3>
+        <p class="hint">The agent will only suggest plans that respect these.</p>
+        <label class="field">
+          <span>Extra money he can spend, after refunds</span>
+          <div class="range-row">
+            <input type="range" id="budget" min="0" max="10000" step="500" value="3000" />
+            <output id="budgetOut">₹3,000</output>
+          </div>
+        </label>
+        <label class="field">
+          <span>Must reach Mangaluru by</span>
+          <select id="arriveBy">
+            <option value="2026-10-25T07:30">7:30 AM, Sun 25 Oct</option>
+            <option value="2026-10-25T08:00">8:00 AM, Sun 25 Oct</option>
+            <option value="2026-10-25T09:00" selected>9:00 AM, Sun 25 Oct</option>
+            <option value="2026-10-25T10:00">10:00 AM, Sun 25 Oct</option>
+          </select>
+        </label>
+        <fieldset class="field">
+          <legend>What matters most</legend>
+          <div class="segmented" role="radiogroup">
+            <label><input type="radio" name="priority" value="balanced" checked /><span>Balanced</span></label>
+            <label><input type="radio" name="priority" value="cheapest" /><span>Cheapest</span></label>
+            <label><input type="radio" name="priority" value="fastest" /><span>Earliest</span></label>
+            <label><input type="radio" name="priority" value="comfort" /><span>Comfort</span></label>
+          </div>
+        </fieldset>
+        <label class="field">
+          <span>Anything else the agent should know?</span>
+          <input type="text" id="notes" placeholder="e.g. avoid buses, travelling with my mother" maxlength="160" />
+        </label>
+      </form>
+    </aside>
+
+    <!-- Right: the agent -->
+    <section class="agent" aria-labelledby="agentHeading">
+      <div class="control">
+        <div>
+          <h2 id="agentHeading">Recovery agent</h2>
+          <p class="sub">Pick a disruption to simulate. The agent takes it from there.</p>        </div>
+        <div class="control-row">
+          <label class="sr-only" for="scenario">Disruption</label>
+          <select id="scenario"></select>
+          <button class="btn btn-alert" id="runBtn" type="button">Simulate disruption</button>
+        </div>
+      </div>
+
+      <div id="stage">
+        <div class="empty" id="empty">
+          <p class="empty-title">All bookings are on track.</p>
+          <p>It is 5:30 PM on Saturday 24 October and Sathvik leaves tonight. Simulate a disruption to watch the agent find what breaks, search alternatives and build a new plan he can approve.</p>
+        </div>
+      </div>
+
+      <details class="audit" id="auditBox">
+        <summary>Activity log</summary>
+        <ul id="auditList"><li>No activity yet.</li></ul>
+      </details>
+    </section>
+  </main>
+
+  <template id="tplPlan">
+    <article class="plan">
+      <div class="plan-flag"></div>
+      <header class="plan-head">
+        <span class="mode-icon"></span>
+        <div>
+          <h4 class="plan-title"></h4>
+          <p class="plan-route"></p>
+        </div>
+      </header>
+      <dl class="plan-stats">
+        <div><dt>Extra cost</dt><dd class="s-cost"></dd></div>
+        <div><dt>Reaches venue</dt><dd class="s-venue"></dd></div>
+        <div><dt>Comfort</dt><dd class="s-comfort"></dd></div>
+      </dl>
+      <p class="plan-why"></p>
+      <ul class="plan-warn"></ul>
+      <details class="plan-more">
+        <summary>Cost breakdown and changes</summary>
+        <table class="breakdown"></table>
+        <ul class="plan-actions"></ul>
+      </details>
+      <button class="btn btn-primary approve" type="button">Approve this plan</button>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
